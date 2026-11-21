@@ -32,6 +32,7 @@ REQUIRED_FILES = [
     "LICENSE",
     # firmware + simulator
     "firmware/chess_clock_pico/chess_clock_pico.ino",
+    "firmware/chess_clock_pico/clock_types.h",
     "test/run_tests.sh",
     "test/harness.cpp",
     "test/stubs/Arduino.h",

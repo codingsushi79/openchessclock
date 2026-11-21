@@ -2,6 +2,7 @@ name: CAD
 
 on:
   push:
+    branches: ["**"]
     paths:
       - "cad/**"
       - "stl/**"

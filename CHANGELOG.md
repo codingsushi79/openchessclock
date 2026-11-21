@@ -5,6 +5,11 @@ All notable changes to this project are listed here. Versions follow
 
 ## Unreleased
 
+## 1.0.1 - 2026-11-21
+- Fix: the firmware failed to compile for a real Pico (Arduino's auto-generated prototypes
+  came before the types they use). Shared types now live in `clock_types.h`.
+- CI no longer runs twice when a tag is pushed.
+
 ## 1.0.0 - 2026-11-21
 First public release.
 

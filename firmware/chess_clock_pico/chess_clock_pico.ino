@@ -33,6 +33,7 @@
 #include <Adafruit_SharpMem.h>
 #include <Fonts/FreeSansBold9pt7b.h>
 #include <Fonts/FreeSansBold12pt7b.h>
+#include "clock_types.h"
 
 // ---------------- Pins ----------------
 const uint8_t PIN_SHARP_SCK  = 18;
@@ -62,9 +63,6 @@ const uint8_t LOW_TIME_TICK_SECS = 5;       // tick each second below this (0 = 
 Adafruit_SharpMem display(&SPI, PIN_SHARP_CS, 400, 240, SHARP_SPI_HZ);
 
 // ---------------- Presets ----------------
-enum TimingMode : uint8_t { FISCHER, DELAY, BRONSTEIN };
-
-struct Preset { uint8_t minutes; uint8_t bonusSec; TimingMode mode; };
 const Preset PRESETS[] = {
   {1,  0,  FISCHER},  {1,  1,  FISCHER},  {2,  1,  FISCHER},
   {3,  0,  FISCHER},  {3,  2,  FISCHER},  {3,  2,  DELAY},
@@ -77,7 +75,6 @@ const uint8_t NUM_PRESETS = sizeof(PRESETS) / sizeof(PRESETS[0]);
 volatile uint8_t presetIdx = 10;            // 10+0
 
 // ---------------- Game state (written by core 0, read by core 1) ----------------
-enum State : uint8_t { SETUP, RUNNING, PAUSED, FLAGGED };
 volatile State state = SETUP;
 
 const uint8_t SIDE_L = 0, SIDE_R = 1, SIDE_NONE = 2;
@@ -99,7 +96,6 @@ long bonusMs() { return (long)P().bonusSec * 1000L; }
 void beep(unsigned int hz, unsigned long ms) { if (soundOn) tone(PIN_BUZZER, hz, ms); }
 
 // ---------------- Lever ----------------
-enum LeverPos : uint8_t { LEVER_MID, LEVER_LEFT_DOWN, LEVER_RIGHT_DOWN };
 LeverPos leverStable = LEVER_MID;      // last debounced, non-mid position
 LeverPos leverCandidate = LEVER_MID;
 unsigned long leverCandidateSince = 0;
@@ -139,8 +135,6 @@ bool updateLever(unsigned long &when) {
 bool leverPending() { return leverCandidate != LEVER_MID && leverCandidate != leverStable; }
 
 // ---------------- Buttons ----------------
-enum BtnEvent { EV_NONE, EV_PRESS, EV_SHORT, EV_LONG };
-struct Button { uint8_t pin; bool down; bool longFired; unsigned long changedAt; };
 Button btnPause = {PIN_BTN_PAUSE, false, false, 0};
 Button btnReset = {PIN_BTN_RESET, false, false, 0};
 Button btnMode  = {PIN_BTN_MODE,  false, false, 0};
@@ -328,7 +322,6 @@ void drawDigit(int x, int y, int w, int h, int t, uint8_t d) {
   if (m & 0x40) hseg(xl + g, xr - g, ym, t);   // g
 }
 
-struct SegFont { int w, h, t, gap, colonW, dotW; };
 const SegFont BIG   = {38, 84, 9, 7, 14, 12};   // "5:00", "19.5"
 const SegFont MID   = {32, 76, 8, 6, 12, 11};   // "10:00"
 const SegFont SMALL = {24, 58, 6, 4, 10, 9};    // "1:30:00"

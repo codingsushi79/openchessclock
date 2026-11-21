@@ -10,7 +10,7 @@ if [ ! -d gfx ]; then
 fi
 mkdir -p shots
 cp ../firmware/chess_clock_pico/chess_clock_pico.ino sketch.inc
-g++ -std=gnu++17 -O1 -w -DARDUINO=100 -Istubs -Igfx/src -o clock_sim harness.cpp gfx/src/Adafruit_GFX.cpp
+g++ -std=gnu++17 -O1 -w -DARDUINO=100 -Istubs -I../firmware/chess_clock_pico -Igfx/src -o clock_sim harness.cpp gfx/src/Adafruit_GFX.cpp
 ./clock_sim
 
 python3 - <<'EOF' || echo "(install Pillow to get shots/contact_sheet.png)"
