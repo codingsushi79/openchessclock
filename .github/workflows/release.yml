@@ -1,0 +1,51 @@
+name: Release
+
+# Push a tag like v1.2.0 and this publishes a GitHub release with one zip holding only what a
+# builder needs: the CAD source, the printable STLs, the firmware, and the build guides.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing tag to (re)build the release for
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ github.event.inputs.tag || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+
+      - name: Package
+        run: |
+          mkdir -p dist
+          # git archive only takes committed files, so build output and stray files can't sneak in.
+          git archive --format=zip --prefix="openchessclock-$TAG/" \
+            -o "dist/openchessclock-$TAG.zip" HEAD \
+            cad stl firmware ASSEMBLY.md PARTS.md WIRING.md LICENSE
+          unzip -l "dist/openchessclock-$TAG.zip"
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          NOTES=$(awk -v v="${TAG#v}" '$0 ~ "^## "v" " {f=1; next} /^## / {f=0} f' CHANGELOG.md)
+          {
+            echo "Everything needed to build the clock is in \`openchessclock-$TAG.zip\`:"
+            echo "CAD source, STLs, firmware, and the assembly, parts and wiring guides."
+            if [ -n "$NOTES" ]; then echo; echo "## What's new"; echo "$NOTES"; fi
+          } > notes.md
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "dist/openchessclock-$TAG.zip" --clobber
+          else
+            gh release create "$TAG" "dist/openchessclock-$TAG.zip" \
+              --title "OpenChessClock $TAG" --notes-file notes.md
+          fi
