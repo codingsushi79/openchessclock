@@ -1,0 +1,70 @@
+name: 3D model / print problem
+description: A printed part doesn't fit, prints badly, breaks, or the OpenSCAD file has an error.
+title: "[Model] "
+labels: ["bug", "cad", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for printing it! Please measure before and after if you can; exact numbers make fit problems easy to fix.
+  - type: dropdown
+    id: part
+    attributes:
+      label: Which part?
+      multiple: true
+      options:
+        - Body (chess_clock_body.stl)
+        - Lever (chess_clock_lever.stl)
+        - Bottom plate (chess_clock_plate.stl)
+        - Button caps (chess_clock_caps.stl)
+        - OpenSCAD source (cad/chess_clock.scad)
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of problem?
+      options:
+        - A part doesn't fit (another printed part or an electronic component)
+        - Lever feel (too stiff, too loose, magnets, switch doesn't click)
+        - Display window offset or size
+        - Print failure (warping, overhangs, needs supports, bed adhesion)
+        - Part broke during assembly or use
+        - OpenSCAD error or warning when rendering
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What's wrong?
+      description: Include measurements where you can (what it is vs. what it should be).
+      placeholder: The KW11 switch doesn't click with the lever pressed; I measured a 1.2 mm gap between the finger and the switch arm even with the switch at the bottom of its slot.
+    validations:
+      required: true
+  - type: textarea
+    id: printer
+    attributes:
+      label: Printer and settings
+      description: Printer, material, nozzle, layer height, walls, infill, slicer, and any scaling or shrinkage compensation.
+      placeholder: Prusa MK4, PETG, 0.4 mm nozzle, 0.2 mm layers, 4 walls, 20 % infill, PrusaSlicer 2.8
+    validations:
+      required: true
+  - type: textarea
+    id: hardware
+    attributes:
+      label: Components involved
+      description: Exact part / seller for switches, display, screws, magnets, if relevant. KW11 arm heights in particular vary by seller.
+  - type: input
+    id: version
+    attributes:
+      label: Model version
+      description: Release tag or commit the STL / .scad came from, and whether you changed any parameters.
+      placeholder: v1.0.0, unmodified STL
+    validations:
+      required: true
+  - type: textarea
+    id: photos
+    attributes:
+      label: Photos / screenshots
+      description: Photos of the problem area, slicer preview, or OpenSCAD console output.

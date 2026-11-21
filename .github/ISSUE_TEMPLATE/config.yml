@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question or idea to talk through
+    url: https://github.com/codingsushi79/openchessclock/discussions
+    about: Not sure it's a bug? Ask in Discussions first.
+  - name: Contributing guide
+    url: https://github.com/codingsushi79/openchessclock/blob/main/CONTRIBUTING.md
+    about: How to set up, test and send a pull request.

@@ -1,0 +1,48 @@
+name: CAD
+
+on:
+  push:
+    paths:
+      - "cad/**"
+      - "stl/**"
+      - ".github/workflows/cad.yml"
+  pull_request:
+    paths:
+      - "cad/**"
+      - "stl/**"
+      - ".github/workflows/cad.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    name: Render ${{ matrix.part }}
+    runs-on: ubuntu-latest
+    container: openscad/openscad:dev
+    strategy:
+      fail-fast: false
+      matrix:
+        part: [lever, body, plate, caps]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Render with OpenSCAD
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p out
+          # Manifold is the fast geometry backend; flag name differs between snapshot versions.
+          if openscad --help 2>&1 | grep -q -- '--backend'; then FAST="--backend=manifold"; else FAST="--enable=manifold"; fi
+          openscad $FAST -D 'part="${{ matrix.part }}"' -o out/${{ matrix.part }}.stl cad/chess_clock.scad 2>&1 | tee out/${{ matrix.part }}.log
+          if grep -E '^(ERROR|WARNING: (Ignoring unknown|Too many|Normalized tree is growing))' out/${{ matrix.part }}.log; then
+            echo "::error::OpenSCAD reported problems rendering ${{ matrix.part }}"; exit 1
+          fi
+          test -s out/${{ matrix.part }}.stl
+          echo "Rendered $(grep -c 'facet normal' out/${{ matrix.part }}.stl) triangles"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stl-${{ matrix.part }}
+          path: out/

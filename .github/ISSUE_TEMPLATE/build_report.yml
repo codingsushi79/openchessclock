@@ -1,0 +1,54 @@
+name: Build report
+description: You built an OpenChessClock! Tell us what worked and what you had to change.
+title: "[Build] "
+labels: ["build-report"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Build reports are the most useful feedback this project gets: every one helps pin down the parts of the design that haven't been verified yet (display window offset, KW11 switch heights, first power-up settings).
+  - type: input
+    id: version
+    attributes:
+      label: Version built
+      placeholder: v1.0.0
+    validations:
+      required: true
+  - type: dropdown
+    id: result
+    attributes:
+      label: How did it go?
+      options:
+        - Works fully
+        - Works after some changes
+        - Partly working
+        - Not working yet
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: What did you verify?
+      options:
+        - label: Display window lines up with the pixels (no change to act_bottom_border)
+        - label: Both lever switches click reliably in both directions
+        - label: Lever starts the correct side (no SWAP_LEVER_SIDES change needed)
+        - label: Screen is the right way up (no DISPLAY_ROTATION change needed)
+        - label: Buttons click and work
+        - label: Buzzer works
+        - label: Played a full game
+  - type: textarea
+    id: changes
+    attributes:
+      label: What did you have to change?
+      description: Firmware settings, CAD parameters, part substitutions, extra sanding or shimming…
+  - type: textarea
+    id: parts
+    attributes:
+      label: Parts and printer
+      description: Where you bought the switches, display and magnets; printer and material.
+  - type: textarea
+    id: photos
+    attributes:
+      label: Photos
+      description: Drag photos in. We'd love to see it!

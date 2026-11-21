@@ -1,0 +1,42 @@
+name: Repo check
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  required-files-and-links:
+    name: Required files, STLs and links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Check required files, STLs and Markdown links
+        run: python3 scripts/check_repo.py
+
+      - name: Check issue templates and workflows are valid YAML
+        run: |
+          pip install --quiet pyyaml
+          python3 - <<'PY'
+          import glob, sys, yaml
+          bad = 0
+          for f in sorted(glob.glob(".github/ISSUE_TEMPLATE/*.yml") + glob.glob(".github/workflows/*.yml")):
+              try:
+                  doc = yaml.safe_load(open(f))
+              except yaml.YAMLError as e:
+                  print(f"::error file={f}::invalid YAML: {e}"); bad += 1; continue
+              if "ISSUE_TEMPLATE" in f and not f.endswith("config.yml"):
+                  for key in ("name", "description", "body"):
+                      if key not in doc:
+                          print(f"::error file={f}::issue form is missing '{key}'"); bad += 1
+              print(f"ok  {f}")
+          sys.exit(1 if bad else 0)
+          PY

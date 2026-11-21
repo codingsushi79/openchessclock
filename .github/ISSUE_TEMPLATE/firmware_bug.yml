@@ -1,0 +1,77 @@
+name: Firmware bug
+description: The clock code does something wrong (timing, buttons, lever, display, sound, compile errors).
+title: "[Firmware] "
+labels: ["bug", "firmware", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! Please check [existing issues](https://github.com/codingsushi79/openchessclock/issues?q=label%3Afirmware) first.
+        Tip: many timing bugs can be reproduced in the desktop simulator (`./test/run_tests.sh`), which makes them much faster to fix.
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where did you see it?
+      options:
+        - On a real Raspberry Pi Pico
+        - In the desktop simulator (test/run_tests.sh)
+        - When compiling / uploading
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which part of the firmware?
+      multiple: true
+      options:
+        - Timing / clock values (Fischer, delay, Bronstein, sudden death)
+        - Lever detection
+        - Buttons (II / R / M)
+        - Display / screen layout
+        - Sound / low-time warnings
+        - Presets / setup screen
+        - Compile or upload error
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What you did, what the clock did, and what you expected instead.
+      placeholder: |
+        Preset 5+3 Fischer. After pausing and resuming, the left clock jumped back by 3 s.
+        Expected: the clock continues from where it was paused.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Select preset 8 (5+3 Fischer)
+        2. Press the lever to start
+        3. Press II, wait 5 s, press II again
+    validations:
+      required: true
+  - type: input
+    id: commit
+    attributes:
+      label: Firmware version
+      description: The release tag or commit you flashed (e.g. v1.0.0 or a1b2c3d).
+    validations:
+      required: true
+  - type: textarea
+    id: setup
+    attributes:
+      label: Board and software
+      description: Board (Pico / Pico W / clone), arduino-pico core version, Adafruit library versions, and any settings you changed at the top of the sketch.
+      placeholder: |
+        Raspberry Pi Pico (original), arduino-pico 4.x, Adafruit SHARP Memory Display 1.x
+        Changed: DISPLAY_ROTATION = 2
+  - type: textarea
+    id: logs
+    attributes:
+      label: Compile errors, simulator output, photos or video
+      description: Paste text output here; drag photos or a short video in. A video of a timing bug helps a lot.
+      render: text

@@ -1,0 +1,64 @@
+name: Firmware
+
+on:
+  push:
+    paths:
+      - "firmware/**"
+      - "test/**"
+      - ".github/workflows/firmware.yml"
+  pull_request:
+    paths:
+      - "firmware/**"
+      - "test/**"
+      - ".github/workflows/firmware.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compile:
+    name: Compile for Raspberry Pi Pico
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: arduino/setup-arduino-cli@v2
+
+      - name: Install the RP2040 core and libraries
+        run: |
+          URL=https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json
+          arduino-cli core update-index --additional-urls "$URL"
+          arduino-cli core install rp2040:rp2040 --additional-urls "$URL"
+          arduino-cli lib install "Adafruit SHARP Memory Display" "Adafruit GFX Library" "Adafruit BusIO"
+
+      - name: Compile
+        run: |
+          arduino-cli compile --fqbn rp2040:rp2040:rpipico --warnings default \
+            --output-dir build firmware/chess_clock_pico
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: firmware-uf2
+          path: build/*.uf2
+
+  simulator:
+    name: Desktop simulator
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Pillow
+        run: pip install --quiet pillow
+
+      - name: Run the scripted games
+        run: ./test/run_tests.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: simulator-screens
+          path: test/shots/

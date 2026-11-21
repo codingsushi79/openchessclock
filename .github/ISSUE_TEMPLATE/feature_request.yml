@@ -1,0 +1,43 @@
+name: Feature request
+description: Suggest a new feature for the firmware, the hardware, or the docs.
+title: "[Feature] "
+labels: ["enhancement", "triage"]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      multiple: true
+      options:
+        - Firmware (timing modes, presets, display, sound)
+        - Hardware / 3D model
+        - Electronics / wiring
+        - Docs
+        - Tooling / CI / simulator
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would it solve?
+      placeholder: In multi-stage games (40 moves in 90 min, then 30 min + 30 s) I have to set the second stage by hand.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would you like?
+      placeholder: Support for FIDE multi-stage time controls, switching automatically after move 40.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives or examples
+      description: Other clocks that do this, workarounds you use today, sketches or mock-ups.
+  - type: checkboxes
+    id: help
+    attributes:
+      label: Contributing
+      options:
+        - label: I'd like to work on this myself

@@ -1,0 +1,15 @@
+# Simulator build output (created by test/run_tests.sh)
+test/gfx/
+test/shots/
+test/clock_sim
+test/sketch.inc
+
+# Arduino / editors / OS
+build/
+*.bin
+*.uf2
+*.elf
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
